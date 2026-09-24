@@ -1,0 +1,1136 @@
+{
+	"info": {
+		"_postman_id": "laravel-starter-code-api",
+		"name": "Laravel Starter Code API",
+		"description": "Complete API collection for Laravel Starter Code.\n\n**Base URLs**\n- Client: `{{base_url}}/api/v1/client`\n- Admin: `{{base_url}}/api/v1/admin`\n\n**Auth**\n- Client/User: OTP-based (Sanctum Bearer token)\n- Admin: Password login (Sanctum Bearer token)\n\n**Locale**\nSend `X-Locale: en` or `X-Locale: ar` (default: ar)\n\n**Seeded Admin**\n- Email: superadmin@example.com\n- Password: Test@123\n\n**OTP (local dev)**\nSet `USE_FIXED_OTP=true` in `.env` to use a fixed OTP code.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{ "key": "base_url", "value": "http://starter.test" },
+		{ "key": "locale", "value": "en" },
+		{ "key": "user_token", "value": "" },
+		{ "key": "admin_token", "value": "" },
+		{ "key": "blog_id", "value": "1" },
+		{ "key": "user_id", "value": "1" },
+		{ "key": "admin_id", "value": "1" },
+		{ "key": "role_id", "value": "1" },
+		{ "key": "comment_id", "value": "1" },
+		{ "key": "notification_id", "value": "" },
+		{ "key": "contact_message_id", "value": "1" },
+		{ "key": "notification_group_id", "value": "1" }
+	],
+	"auth": {
+		"type": "noauth"
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"pm.request.headers.upsert({ key: 'Accept', value: 'application/json' });",
+					"pm.request.headers.upsert({ key: 'X-Locale', value: pm.collectionVariables.get('locale') || 'en' });"
+				]
+			}
+		}
+	],
+	"item": [
+		{
+			"name": "Client API",
+			"description": "Public & authenticated client endpoints (`/api/v1/client`)",
+			"item": [
+				{
+					"name": "Public",
+					"item": [
+						{
+							"name": "Get Contact Details",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": "{{base_url}}/api/v1/client/contact"
+							}
+						},
+						{
+							"name": "Get About Us",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": "{{base_url}}/api/v1/client/about-us"
+							}
+						},
+						{
+							"name": "Get Terms & Conditions",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": "{{base_url}}/api/v1/client/terms"
+							}
+						},
+						{
+							"name": "Get Privacy Policy",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": "{{base_url}}/api/v1/client/privacy"
+							}
+						},
+						{
+							"name": "Get General Settings",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": "{{base_url}}/api/v1/client/general-settings"
+							}
+						},
+						{
+							"name": "Submit Contact Us",
+							"request": {
+								"method": "POST",
+								"header": [{ "key": "Content-Type", "value": "application/json" }],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"name\": \"Abdelmaksoud\",\n  \"country_code\": \"+966\",\n  \"phone\": \"512345678\",\n  \"email\": \"abdelmaksoud@example.com\",\n  \"message_type\": \"inquiry\",\n  \"message\": \"Hello, I have a question about your services.\"\n}"
+								},
+								"url": "{{base_url}}/api/v1/client/contact-us",
+								"description": "message_type: request | suggestion | inquiry | complaint | other"
+							}
+						},
+						{
+							"name": "List Blogs",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/api/v1/client/blogs?per_page=10&page=1",
+									"host": ["{{base_url}}"],
+									"path": ["api", "v1", "client", "blogs"],
+									"query": [
+										{ "key": "per_page", "value": "10" },
+										{ "key": "page", "value": "1" },
+										{ "key": "name", "value": "", "disabled": true },
+										{ "key": "start_date", "value": "", "disabled": true },
+										{ "key": "end_date", "value": "", "disabled": true }
+									]
+								}
+							}
+						},
+						{
+							"name": "Show Blog",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": "{{base_url}}/api/v1/client/blogs/{{blog_id}}"
+							}
+						}
+					]
+				},
+				{
+					"name": "Auth",
+					"item": [
+						{
+							"name": "Register",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{ "key": "name", "value": "Abdelmaksoud", "type": "text" },
+										{ "key": "country_code", "value": "+966", "type": "text" },
+										{ "key": "phone", "value": "512345678", "type": "text" },
+										{ "key": "email", "value": "user@example.com", "type": "text" },
+										{ "key": "avatar", "type": "file", "src": [], "disabled": true }
+									]
+								},
+								"url": "{{base_url}}/api/v1/client/auth/register",
+								"description": "Returns OTP. Next step: Verify OTP with purpose `register`."
+							}
+						},
+						{
+							"name": "Login (Send OTP)",
+							"request": {
+								"method": "POST",
+								"header": [{ "key": "Content-Type", "value": "application/json" }],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"email\": \"user@example.com\"\n}"
+								},
+								"url": "{{base_url}}/api/v1/client/auth/login",
+								"description": "Login with email OR phone+country_code."
+							},
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const json = pm.response.json();",
+											"if (json?.data?.otp) {",
+											"    pm.collectionVariables.set('last_otp', json.data.otp);",
+											"}"
+										],
+										"type": "text/javascript"
+									}
+								}
+							]
+						},
+						{
+							"name": "Login by Phone (Send OTP)",
+							"request": {
+								"method": "POST",
+								"header": [{ "key": "Content-Type", "value": "application/json" }],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"country_code\": \"+966\",\n  \"phone\": \"512345678\"\n}"
+								},
+								"url": "{{base_url}}/api/v1/client/auth/login"
+							},
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const json = pm.response.json();",
+											"if (json?.data?.otp) {",
+											"    pm.collectionVariables.set('last_otp', json.data.otp);",
+											"}"
+										],
+										"type": "text/javascript"
+									}
+								}
+							]
+						},
+						{
+							"name": "Verify OTP",
+							"request": {
+								"method": "POST",
+								"header": [{ "key": "Content-Type", "value": "application/json" }],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"email\": \"user@example.com\",\n  \"code\": \"123456\",\n  \"purpose\": \"login\",\n  \"fcm_token\": \"your-fcm-token\",\n  \"device_type\": \"android\"\n}"
+								},
+								"url": "{{base_url}}/api/v1/client/auth/verify-otp",
+								"description": "purpose: login | register | change_phone\nfcm_token required for login & register."
+							},
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const json = pm.response.json();",
+											"if (json?.data?.token) {",
+											"    pm.collectionVariables.set('user_token', json.data.token);",
+											"}"
+										],
+										"type": "text/javascript"
+									}
+								}
+							]
+						},
+						{
+							"name": "Resend OTP",
+							"request": {
+								"method": "POST",
+								"header": [{ "key": "Content-Type", "value": "application/json" }],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"email\": \"user@example.com\",\n  \"purpose\": \"login\"\n}"
+								},
+								"url": "{{base_url}}/api/v1/client/auth/resend-otp"
+							}
+						},
+						{
+							"name": "Logout",
+							"request": {
+								"auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{user_token}}", "type": "string" }] },
+								"method": "POST",
+								"header": [{ "key": "Content-Type", "value": "application/json" }],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"device_token\": \"\"\n}"
+								},
+								"url": "{{base_url}}/api/v1/client/auth/logout"
+							}
+						}
+					]
+				},
+				{
+					"name": "Profile",
+					"auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{user_token}}", "type": "string" }] },
+					"item": [
+						{
+							"name": "Get Profile",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": "{{base_url}}/api/v1/client/profile"
+							}
+						},
+						{
+							"name": "Update Profile",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{ "key": "name", "value": "Abdelmaksoud Updated", "type": "text" },
+										{ "key": "email", "value": "user@example.com", "type": "text" },
+										{ "key": "avatar", "type": "file", "src": [], "disabled": true }
+									]
+								},
+								"url": "{{base_url}}/api/v1/client/profile"
+							}
+						},
+						{
+							"name": "Delete Profile",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": "{{base_url}}/api/v1/client/profile"
+							}
+						},
+						{
+							"name": "Change Phone (Send OTP)",
+							"request": {
+								"method": "POST",
+								"header": [{ "key": "Content-Type", "value": "application/json" }],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"country_code\": \"+966\",\n  \"phone\": \"598765432\"\n}"
+								},
+								"url": "{{base_url}}/api/v1/client/profile/change-phone",
+								"description": "Then verify OTP with purpose `change_phone` (authenticated)."
+							}
+						}
+					]
+				},
+				{
+					"name": "Blogs (Authenticated)",
+					"auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{user_token}}", "type": "string" }] },
+					"item": [
+						{
+							"name": "Add Blog Comment",
+							"request": {
+								"method": "POST",
+								"header": [{ "key": "Content-Type", "value": "application/json" }],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"content\": \"Great article!\"\n}"
+								},
+								"url": "{{base_url}}/api/v1/client/blogs/{{blog_id}}/comments"
+							}
+						}
+					]
+				},
+				{
+					"name": "Notifications",
+					"auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{user_token}}", "type": "string" }] },
+					"item": [
+						{
+							"name": "List Notifications",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/api/v1/client/notifications?page=1",
+									"host": ["{{base_url}}"],
+									"path": ["api", "v1", "client", "notifications"],
+									"query": [{ "key": "page", "value": "1" }]
+								}
+							}
+						},
+						{
+							"name": "Unread Count",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": "{{base_url}}/api/v1/client/notifications/unread-count"
+							}
+						},
+						{
+							"name": "Mark All as Read",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"url": "{{base_url}}/api/v1/client/notifications/mark-as-read"
+							}
+						},
+						{
+							"name": "Mark Single as Read",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"url": "{{base_url}}/api/v1/client/notifications/{{notification_id}}/mark-as-read"
+							}
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Admin API",
+			"description": "Admin dashboard endpoints (`/api/v1/admin`)",
+			"item": [
+				{
+					"name": "Auth",
+					"item": [
+						{
+							"name": "Login",
+							"request": {
+								"method": "POST",
+								"header": [{ "key": "Content-Type", "value": "application/json" }],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"email\": \"superadmin@example.com\",\n  \"password\": \"Test@123\"\n}"
+								},
+								"url": "{{base_url}}/api/v1/admin/auth/login"
+							},
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const json = pm.response.json();",
+											"if (json?.data?.token) {",
+											"    pm.collectionVariables.set('admin_token', json.data.token);",
+											"}"
+										],
+										"type": "text/javascript"
+									}
+								}
+							]
+						},
+						{
+							"name": "Forgot Password (Send OTP)",
+							"request": {
+								"method": "POST",
+								"header": [{ "key": "Content-Type", "value": "application/json" }],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"email\": \"superadmin@example.com\"\n}"
+								},
+								"url": "{{base_url}}/api/v1/admin/auth/forgot-password"
+							},
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const json = pm.response.json();",
+											"if (json?.data?.otp) {",
+											"    pm.collectionVariables.set('last_otp', json.data.otp);",
+											"}"
+										],
+										"type": "text/javascript"
+									}
+								}
+							]
+						},
+						{
+							"name": "Verify OTP",
+							"request": {
+								"method": "POST",
+								"header": [{ "key": "Content-Type", "value": "application/json" }],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"email\": \"superadmin@example.com\",\n  \"code\": \"123456\",\n  \"purpose\": \"forget_password\"\n}"
+								},
+								"url": "{{base_url}}/api/v1/admin/auth/verify-otp"
+							},
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const json = pm.response.json();",
+											"if (json?.data?.token) {",
+											"    pm.collectionVariables.set('admin_token', json.data.token);",
+											"}"
+										],
+										"type": "text/javascript"
+									}
+								}
+							]
+						},
+						{
+							"name": "Reset Password",
+							"request": {
+								"auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{admin_token}}", "type": "string" }] },
+								"method": "POST",
+								"header": [{ "key": "Content-Type", "value": "application/json" }],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"password\": \"NewPass@123\",\n  \"password_confirmation\": \"NewPass@123\"\n}"
+								},
+								"url": "{{base_url}}/api/v1/admin/auth/reset-password"
+							}
+						},
+						{
+							"name": "Logout",
+							"request": {
+								"auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{admin_token}}", "type": "string" }] },
+								"method": "POST",
+								"header": [{ "key": "Content-Type", "value": "application/json" }],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"device_token\": \"\"\n}"
+								},
+								"url": "{{base_url}}/api/v1/admin/auth/logout"
+							}
+						},
+						{
+							"name": "Get Profile",
+							"request": {
+								"auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{admin_token}}", "type": "string" }] },
+								"method": "GET",
+								"header": [],
+								"url": "{{base_url}}/api/v1/admin/auth/profile"
+							}
+						},
+						{
+							"name": "Update Profile",
+							"request": {
+								"auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{admin_token}}", "type": "string" }] },
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{ "key": "name", "value": "Super Admin", "type": "text" },
+										{ "key": "email", "value": "superadmin@example.com", "type": "text" },
+										{ "key": "phone", "value": "+966500500500", "type": "text" },
+										{ "key": "avatar", "type": "file", "src": [], "disabled": true }
+									]
+								},
+								"url": "{{base_url}}/api/v1/admin/auth/profile"
+							}
+						}
+					]
+				},
+				{
+					"name": "Admins",
+					"auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{admin_token}}", "type": "string" }] },
+					"item": [
+						{
+							"name": "List Admins",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/api/v1/admin/admins?per_page=15&page=1",
+									"host": ["{{base_url}}"],
+									"path": ["api", "v1", "admin", "admins"],
+									"query": [
+										{ "key": "per_page", "value": "15" },
+										{ "key": "page", "value": "1" },
+										{ "key": "paginate", "value": "true", "disabled": true }
+									]
+								}
+							}
+						},
+						{
+							"name": "Show Admin",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": "{{base_url}}/api/v1/admin/admins/{{admin_id}}"
+							}
+						},
+						{
+							"name": "Create Admin",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{ "key": "name", "value": "New Admin", "type": "text" },
+										{ "key": "email", "value": "admin@example.com", "type": "text" },
+										{ "key": "phone", "value": "0500000000", "type": "text" },
+										{ "key": "password", "value": "Test@123", "type": "text" },
+										{ "key": "is_active", "value": "1", "type": "text" },
+										{ "key": "role_id", "value": "1", "type": "text" },
+										{ "key": "avatar", "type": "file", "src": [], "disabled": true }
+									]
+								},
+								"url": "{{base_url}}/api/v1/admin/admins"
+							}
+						},
+						{
+							"name": "Update Admin",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{ "key": "name", "value": "Updated Admin", "type": "text" },
+										{ "key": "email", "value": "admin@example.com", "type": "text" },
+										{ "key": "role_id", "value": "1", "type": "text" },
+										{ "key": "is_active", "value": "1", "type": "text" }
+									]
+								},
+								"url": "{{base_url}}/api/v1/admin/admins/{{admin_id}}"
+							}
+						},
+						{
+							"name": "Delete Admin",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": "{{base_url}}/api/v1/admin/admins/{{admin_id}}"
+							}
+						},
+						{
+							"name": "Toggle Admin Status",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"url": "{{base_url}}/api/v1/admin/admins/{{admin_id}}/toggle-status"
+							}
+						}
+					]
+				},
+				{
+					"name": "Users",
+					"auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{admin_token}}", "type": "string" }] },
+					"item": [
+						{
+							"name": "List Users",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/api/v1/admin/users?per_page=15&page=1",
+									"host": ["{{base_url}}"],
+									"path": ["api", "v1", "admin", "users"],
+									"query": [
+										{ "key": "per_page", "value": "15" },
+										{ "key": "page", "value": "1" },
+										{ "key": "search", "value": "", "disabled": true },
+										{ "key": "status", "value": "", "disabled": true },
+										{ "key": "email", "value": "", "disabled": true },
+										{ "key": "phone", "value": "", "disabled": true }
+									]
+								}
+							}
+						},
+						{
+							"name": "Show User",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": "{{base_url}}/api/v1/admin/users/{{user_id}}"
+							}
+						},
+						{
+							"name": "Toggle User Status",
+							"request": {
+								"method": "PUT",
+								"header": [{ "key": "Content-Type", "value": "application/json" }],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"reason\": \"Violation of terms\"\n}"
+								},
+								"url": "{{base_url}}/api/v1/admin/users/{{user_id}}/toggle-status"
+							}
+						},
+						{
+							"name": "Export Users (Excel)",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": "{{base_url}}/api/v1/admin/users/export/excel"
+							}
+						},
+						{
+							"name": "Export Users (PDF)",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": "{{base_url}}/api/v1/admin/users/export/pdf"
+							}
+						}
+					]
+				},
+				{
+					"name": "Roles & Permissions",
+					"auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{admin_token}}", "type": "string" }] },
+					"item": [
+						{
+							"name": "List Roles",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/api/v1/admin/roles?per_page=15&page=1",
+									"host": ["{{base_url}}"],
+									"path": ["api", "v1", "admin", "roles"],
+									"query": [
+										{ "key": "per_page", "value": "15" },
+										{ "key": "page", "value": "1" },
+										{ "key": "search", "value": "", "disabled": true },
+										{ "key": "status", "value": "active", "disabled": true }
+									]
+								}
+							}
+						},
+						{
+							"name": "Show Role",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": "{{base_url}}/api/v1/admin/roles/{{role_id}}"
+							}
+						},
+						{
+							"name": "Create Role",
+							"request": {
+								"method": "POST",
+								"header": [{ "key": "Content-Type", "value": "application/json" }],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"name\": {\n    \"en\": \"Editor\",\n    \"ar\": \"محرر\"\n  },\n  \"permissions\": [1, 2, 3]\n}"
+								},
+								"url": "{{base_url}}/api/v1/admin/roles"
+							}
+						},
+						{
+							"name": "Update Role",
+							"request": {
+								"method": "PUT",
+								"header": [{ "key": "Content-Type", "value": "application/json" }],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"name\": {\n    \"en\": \"Editor\",\n    \"ar\": \"محرر\"\n  },\n  \"permissions\": [1, 2, 3, 4]\n}"
+								},
+								"url": "{{base_url}}/api/v1/admin/roles/{{role_id}}"
+							}
+						},
+						{
+							"name": "Delete Role",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": "{{base_url}}/api/v1/admin/roles/{{role_id}}"
+							}
+						},
+						{
+							"name": "Toggle Role Status",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"url": "{{base_url}}/api/v1/admin/roles/{{role_id}}/toggle-status"
+							}
+						},
+						{
+							"name": "List Permissions",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": "{{base_url}}/api/v1/admin/permissions"
+							}
+						}
+					]
+				},
+				{
+					"name": "Settings",
+					"auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{admin_token}}", "type": "string" }] },
+					"item": [
+						{
+							"name": "Contact Settings",
+							"item": [
+								{
+									"name": "Get Contact Settings",
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": "{{base_url}}/api/v1/admin/contact-settings"
+									}
+								},
+								{
+									"name": "Update Contact Settings",
+									"request": {
+										"method": "PUT",
+										"header": [{ "key": "Content-Type", "value": "application/json" }],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"facebook_link\": \"https://facebook.com/page\",\n  \"x_link\": \"https://x.com/page\",\n  \"instagram_link\": \"https://instagram.com/page\",\n  \"snapchat_link\": null,\n  \"tiktok_link\": null,\n  \"youtube_link\": null,\n  \"whatsapp_number\": \"0512345678\",\n  \"contact_numbers\": [\"0512345678\", \"0598765432\"]\n}"
+										},
+										"url": "{{base_url}}/api/v1/admin/contact-settings"
+									}
+								}
+							]
+						},
+						{
+							"name": "About Us Settings",
+							"item": [
+								{
+									"name": "Get About Us Settings",
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": "{{base_url}}/api/v1/admin/aboutus-settings"
+									}
+								},
+								{
+									"name": "Update About Us Settings",
+									"request": {
+										"method": "PUT",
+										"header": [{ "key": "Content-Type", "value": "application/json" }],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"value_ar\": \"نبذة عنا بالعربية\",\n  \"value_en\": \"About us in English\"\n}"
+										},
+										"url": "{{base_url}}/api/v1/admin/aboutus-settings"
+									}
+								}
+							]
+						},
+						{
+							"name": "Terms Settings",
+							"item": [
+								{
+									"name": "Get Terms Settings",
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": "{{base_url}}/api/v1/admin/terms-settings"
+									}
+								},
+								{
+									"name": "Update Terms Settings",
+									"request": {
+										"method": "PUT",
+										"header": [{ "key": "Content-Type", "value": "application/json" }],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"value_ar\": \"الشروط والأحكام\",\n  \"value_en\": \"Terms and Conditions\"\n}"
+										},
+										"url": "{{base_url}}/api/v1/admin/terms-settings"
+									}
+								}
+							]
+						},
+						{
+							"name": "Privacy Settings",
+							"item": [
+								{
+									"name": "Get Privacy Settings",
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": "{{base_url}}/api/v1/admin/privacy-settings"
+									}
+								},
+								{
+									"name": "Update Privacy Settings",
+									"request": {
+										"method": "PUT",
+										"header": [{ "key": "Content-Type", "value": "application/json" }],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"value_ar\": \"سياسة الخصوصية\",\n  \"value_en\": \"Privacy Policy\"\n}"
+										},
+										"url": "{{base_url}}/api/v1/admin/privacy-settings"
+									}
+								}
+							]
+						},
+						{
+							"name": "General Settings",
+							"item": [
+								{
+									"name": "Get General Settings",
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": "{{base_url}}/api/v1/admin/general-settings"
+									}
+								},
+								{
+									"name": "Update General Settings",
+									"request": {
+										"method": "PUT",
+										"header": [{ "key": "Content-Type", "value": "application/json" }],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n  \"is_free_period_enabled\": false,\n  \"free_period_start_date\": null,\n  \"free_period_end_date\": null,\n  \"free_period_reason_ar\": null,\n  \"free_period_reason_en\": null\n}"
+										},
+										"url": "{{base_url}}/api/v1/admin/general-settings"
+									}
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "Contact Messages",
+					"auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{admin_token}}", "type": "string" }] },
+					"item": [
+						{
+							"name": "List Contact Messages",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/api/v1/admin/contact-messages?per_page=15&page=1",
+									"host": ["{{base_url}}"],
+									"path": ["api", "v1", "admin", "contact-messages"],
+									"query": [
+										{ "key": "per_page", "value": "15" },
+										{ "key": "page", "value": "1" },
+										{ "key": "search", "value": "", "disabled": true },
+										{ "key": "message_type", "value": "inquiry", "disabled": true },
+										{ "key": "status", "value": "", "disabled": true }
+									]
+								}
+							}
+						},
+						{
+							"name": "Show Contact Message",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": "{{base_url}}/api/v1/admin/contact-messages/{{contact_message_id}}"
+							}
+						},
+						{
+							"name": "Reply to Contact Message",
+							"request": {
+								"method": "POST",
+								"header": [{ "key": "Content-Type", "value": "application/json" }],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"reply\": \"Thank you for contacting us. We will get back to you shortly.\"\n}"
+								},
+								"url": "{{base_url}}/api/v1/admin/contact-messages/{{contact_message_id}}/reply"
+							}
+						}
+					]
+				},
+				{
+					"name": "Notification Groups",
+					"auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{admin_token}}", "type": "string" }] },
+					"item": [
+						{
+							"name": "List Notification Groups",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/api/v1/admin/notification-groups?per_page=15&page=1",
+									"host": ["{{base_url}}"],
+									"path": ["api", "v1", "admin", "notification-groups"],
+									"query": [
+										{ "key": "per_page", "value": "15" },
+										{ "key": "page", "value": "1" },
+										{ "key": "search", "value": "", "disabled": true },
+										{ "key": "status", "value": "", "disabled": true }
+									]
+								}
+							}
+						},
+						{
+							"name": "Show Notification Group",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": "{{base_url}}/api/v1/admin/notification-groups/{{notification_group_id}}"
+							}
+						},
+						{
+							"name": "Create Notification Group",
+							"request": {
+								"method": "POST",
+								"header": [{ "key": "Content-Type", "value": "application/json" }],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"title\": {\n    \"en\": \"New Update\",\n    \"ar\": \"تحديث جديد\"\n  },\n  \"body\": {\n    \"en\": \"Check out our latest features.\",\n    \"ar\": \"اطلع على أحدث الميزات.\"\n  },\n  \"user_ids\": [1, 2]\n}"
+								},
+								"url": "{{base_url}}/api/v1/admin/notification-groups"
+							}
+						},
+						{
+							"name": "Delete Notification Group",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": "{{base_url}}/api/v1/admin/notification-groups/{{notification_group_id}}"
+							}
+						}
+					]
+				},
+				{
+					"name": "Blogs",
+					"auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{admin_token}}", "type": "string" }] },
+					"item": [
+						{
+							"name": "List Blogs",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/api/v1/admin/blogs?per_page=15&page=1",
+									"host": ["{{base_url}}"],
+									"path": ["api", "v1", "admin", "blogs"],
+									"query": [
+										{ "key": "per_page", "value": "15" },
+										{ "key": "page", "value": "1" },
+										{ "key": "name", "value": "", "disabled": true },
+										{ "key": "status", "value": "1", "disabled": true },
+										{ "key": "start_date", "value": "", "disabled": true },
+										{ "key": "end_date", "value": "", "disabled": true }
+									]
+								}
+							}
+						},
+						{
+							"name": "Show Blog",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": "{{base_url}}/api/v1/admin/blogs/{{blog_id}}"
+							}
+						},
+						{
+							"name": "Create Blog",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{ "key": "name[ar]", "value": "عنوان المقال", "type": "text" },
+										{ "key": "name[en]", "value": "Blog Title", "type": "text" },
+										{ "key": "description[ar]", "value": "وصف قصير بالعربية", "type": "text" },
+										{ "key": "description[en]", "value": "Short description in English", "type": "text" },
+										{ "key": "content[ar]", "value": "محتوى المقال بالعربية", "type": "text" },
+										{ "key": "content[en]", "value": "Blog content in English", "type": "text" },
+										{ "key": "main_image_ar", "type": "file", "src": [] },
+										{ "key": "main_image_en", "type": "file", "src": [] },
+										{ "key": "meta_title[ar]", "value": "", "type": "text", "disabled": true },
+										{ "key": "meta_title[en]", "value": "", "type": "text", "disabled": true },
+										{ "key": "meta_description[ar]", "value": "", "type": "text", "disabled": true },
+										{ "key": "meta_description[en]", "value": "", "type": "text", "disabled": true }
+									]
+								},
+								"url": "{{base_url}}/api/v1/admin/blogs"
+							}
+						},
+						{
+							"name": "Update Blog",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{ "key": "name[ar]", "value": "عنوان محدث", "type": "text" },
+										{ "key": "name[en]", "value": "Updated Title", "type": "text" },
+										{ "key": "description[ar]", "value": "وصف محدث", "type": "text" },
+										{ "key": "description[en]", "value": "Updated description", "type": "text" },
+										{ "key": "content[ar]", "value": "محتوى محدث", "type": "text" },
+										{ "key": "content[en]", "value": "Updated content", "type": "text" },
+										{ "key": "main_image_ar", "type": "file", "src": [], "disabled": true },
+										{ "key": "main_image_en", "type": "file", "src": [], "disabled": true }
+									]
+								},
+								"url": "{{base_url}}/api/v1/admin/blogs/{{blog_id}}"
+							}
+						},
+						{
+							"name": "Delete Blog",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": "{{base_url}}/api/v1/admin/blogs/{{blog_id}}"
+							}
+						},
+						{
+							"name": "Toggle Blog Status",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"url": "{{base_url}}/api/v1/admin/blogs/{{blog_id}}/toggle-status"
+							}
+						},
+						{
+							"name": "Toggle Comment Visibility",
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"url": "{{base_url}}/api/v1/admin/comments/{{comment_id}}/toggle-visibility"
+							}
+						},
+						{
+							"name": "Delete Comment",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"url": "{{base_url}}/api/v1/admin/comments/{{comment_id}}"
+							}
+						}
+					]
+				},
+				{
+					"name": "Statistics",
+					"auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{admin_token}}", "type": "string" }] },
+					"item": [
+						{
+							"name": "Dashboard Statistics",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": "{{base_url}}/api/v1/admin/statistics"
+							}
+						}
+					]
+				},
+				{
+					"name": "Notifications",
+					"auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{admin_token}}", "type": "string" }] },
+					"item": [
+						{
+							"name": "List Notifications",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/api/v1/admin/notifications?page=1",
+									"host": ["{{base_url}}"],
+									"path": ["api", "v1", "admin", "notifications"],
+									"query": [{ "key": "page", "value": "1" }]
+								}
+							}
+						},
+						{
+							"name": "Unread Count",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": "{{base_url}}/api/v1/admin/notifications/unread-count"
+							}
+						},
+						{
+							"name": "Mark All as Read",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"url": "{{base_url}}/api/v1/admin/notifications/mark-as-read"
+							}
+						},
+						{
+							"name": "Mark Single as Read",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"url": "{{base_url}}/api/v1/admin/notifications/{{notification_id}}/mark-as-read"
+							}
+						}
+					]
+				}
+			]
+		}
+	]
+}

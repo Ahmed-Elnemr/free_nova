@@ -1,0 +1,112 @@
+{
+	"info": {
+		"_postman_id": "novasign-website-api",
+		"name": "Nova Sign Website API",
+		"description": "Public API for the Nova Sign website ([novasign-sy.com](https://novasign-sy.com/)).\n\n**Base URL**\n`{{base_url}}/api/v1/client`\n\n**Locale**\nSend `X-Locale: ar` or `X-Locale: en`. Default is `ar`. Every text field in the response follows this header.\n\n**Envelope**\n```json\n{\n  \"message\": \"\",\n  \"status_code\": \"1000\",\n  \"data\": {},\n  \"errors\": null\n}\n```\n\nThe homepage endpoint returns the full single-page site: brand, hero, about, partners, why us, services, portfolio, contact, and SEO.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://127.0.0.1:8000"
+		},
+		{
+			"key": "locale",
+			"value": "ar"
+		}
+	],
+	"auth": {
+		"type": "noauth"
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"pm.request.headers.upsert({ key: 'Accept', value: 'application/json' });",
+					"if (!pm.request.headers.has('X-Locale')) {",
+					"    pm.request.headers.upsert({ key: 'X-Locale', value: pm.collectionVariables.get('locale') || 'ar' });",
+					"}"
+				]
+			}
+		}
+	],
+	"item": [
+		{
+			"name": "Website",
+			"description": "Public endpoints that render https://novasign-sy.com/",
+			"item": [
+				{
+					"name": "Homepage (Arabic)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Locale",
+								"value": "ar"
+							}
+						],
+						"url": "{{base_url}}/api/v1/client/home",
+						"description": "Full homepage payload in Arabic.\n\n`data` shape:\n- `brand.name`\n- `hero`: `{ key, alt, image }` (`key` is `hero`)\n- `about`: `{ title, body }`\n- `partners`: `{ title, items[] }` each item `{ id, slug, name, logo, sort_order }`\n- `why_us`: `{ title, lead, image, points[] }` each point `{ id, slug, body, sort_order }`\n- `services`: `{ title, items[] }` each item `{ id, slug, title, description, image, sort_order }`\n- `works`: `{ title, items[] }` each item `{ id, slug, title, image, sort_order }`\n- `contact`: `{ title, facebook_link, instagram_link, whatsapp_number, whatsapp_link, contact_numbers, ... }`\n- `seo`: `{ title, description }`\n\nOnly active records are returned, ordered by `sort_order`."
+					},
+					"response": []
+				},
+				{
+					"name": "Homepage (English)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-Locale",
+								"value": "en"
+							}
+						],
+						"url": "{{base_url}}/api/v1/client/home",
+						"description": "Same payload as Homepage (Arabic), with English copy."
+					},
+					"response": []
+				},
+				{
+					"name": "Contact Details",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/api/v1/client/contact",
+						"description": "Social and phone details used in the contact section.\n\n`data`:\n- `facebook_link`\n- `x_link`\n- `instagram_link`\n- `snapchat_link`\n- `tiktok_link`\n- `youtube_link`\n- `whatsapp_number`\n- `whatsapp_link` (built as `https://wa.me/{digits}`)\n- `contact_numbers` (array)\n\nThe same object is nested under `contact` on the homepage response."
+					},
+					"response": []
+				},
+				{
+					"name": "About Us",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": "{{base_url}}/api/v1/client/about-us",
+						"description": "Localized about text.\n\n`data.value` is the Arabic or English body based on `X-Locale`.\n\nThe homepage response already includes this copy under `about.title` and `about.body`."
+					},
+					"response": []
+				},
+				{
+					"name": "Submit Contact Message",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"زياد\",\n  \"country_code\": \"+963\",\n  \"phone\": \"944000000\",\n  \"email\": \"visitor@example.com\",\n  \"message_type\": \"inquiry\",\n  \"message\": \"أريد عرض سعر للوحات الإعلانية.\"\n}"
+						},
+						"url": "{{base_url}}/api/v1/client/contact-us",
+						"description": "Stores a message in the dashboard inbox. Returns `201`.\n\n`message_type`: `request` | `suggestion` | `inquiry` | `complaint` | `other`.\n\n`country_code` is a dial code such as `+963`. Leading zeros on `phone` are stripped. The stored phone is `country_code` + `phone`."
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

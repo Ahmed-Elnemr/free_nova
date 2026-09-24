@@ -1,0 +1,9 @@
+{
+    "request": "Request",
+    "suggestion": "Suggestion",
+    "inquiry": "Inquiry",
+    "complaint": "Complaint",
+    "other": "Other",
+    "replied": "Replied",
+    "not_replited": "Waiting for reply"
+}

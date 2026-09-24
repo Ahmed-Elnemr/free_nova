@@ -1,0 +1,9 @@
+{
+    "request": "طلب",
+    "suggestion": "اقتراح",
+    "inquiry": "استفسار",
+    "complaint": "شكوى",
+    "other": "أخرى",
+    "replied": "تم الرد",
+    "not_replited": "بانتظار الرد"
+}

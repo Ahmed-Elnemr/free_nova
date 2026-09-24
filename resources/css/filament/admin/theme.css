@@ -1,0 +1,25 @@
+@import '../../../../vendor/filament/filament/resources/css/theme.css';
+
+@source '../../../../app/Filament/**/*';
+@source '../../../../resources/views/filament/**/*';
+@source '../../../../vendor/bezhansalleh/filament-language-switch/resources/views/**/*.blade.php';
+@source '../../../../vendor/diogogpinto/filament-auth-ui-enhancer/resources/**/*.blade.php';
+
+.fi-header-heading {
+    background: none;
+    box-shadow: none;
+    color: var(--gray-950);
+}
+
+.fi-header-heading::after {
+    content: none;
+}
+
+a.fi-wi-stats-overview-stat {
+    transition: transform 150ms ease, box-shadow 150ms ease;
+}
+
+a.fi-wi-stats-overview-stat:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px rgb(91 44 145 / 12%);
+}
