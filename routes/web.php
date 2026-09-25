@@ -22,6 +22,16 @@ Route::get('/setup/ser1', function () {
     ]);
 });
 
+Route::get('/setup/key', function () {
+    Artisan::call('key:generate', [
+        '--force' => true,
+    ]);
+
+    return response(Artisan::output(), 200, [
+        'Content-Type' => 'text/plain; charset=UTF-8',
+    ]);
+});
+
 $frontFile = function (string $folder, string $path) {
     $root = realpath(base_path('front/'.$folder));
     $file = realpath(base_path('front/'.$folder.'/'.$path));
