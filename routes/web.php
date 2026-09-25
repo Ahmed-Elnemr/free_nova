@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -7,6 +8,19 @@ Route::get('/', function () {
 });
 
 Route::redirect('/login', '/admin');
+
+Route::get('/setup/ser1', function () {
+    set_time_limit(0);
+
+    Artisan::call('migrate:fresh', [
+        '--seed' => true,
+        '--force' => true,
+    ]);
+
+    return response(Artisan::output(), 200, [
+        'Content-Type' => 'text/plain; charset=UTF-8',
+    ]);
+});
 
 $frontFile = function (string $folder, string $path) {
     $root = realpath(base_path('front/'.$folder));
